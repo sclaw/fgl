@@ -37,6 +37,7 @@ import Control.Applicative (Applicative (..))
 
 import Data.Graph.Inductive.Graph
 import Data.Graph.Inductive.Monad
+import Control.Monad.Fail (MonadFail)
 
 -- some additional (graph) utilities
 --
@@ -107,10 +108,10 @@ recMGT p mg f u = condMGT p (return u)
 
 -- some monadic graph accessing functions
 --
-getNode :: (GraphM m gr) => GT m (gr a b) Node
+getNode :: (GraphM m gr, MonadFail m) => GT m (gr a b) Node
 getNode = MGT (\mg->do {((_,v,_,_),g) <- matchAnyM mg; return (v,g)})
 
-getContext :: (GraphM m gr) => GT m (gr a b) (Context a b)
+getContext :: (GraphM m gr, MonadFail m) => GT m (gr a b) (Context a b)
 getContext = MGT matchAnyM
 
 -- some functions defined by using the do-notation explicitly
