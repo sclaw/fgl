@@ -19,6 +19,7 @@ module Data.Graph.Inductive.Monad(
 
 
 import Data.Graph.Inductive.Graph
+import Control.Monad.Fail (MonadFail)
 
 {-# ANN module "HLint: ignore Redundant lambda" #-}
 
@@ -52,7 +53,7 @@ class (Monad m) => GraphM m gr where
 
   labNodesM  :: m (gr a b) -> m [LNode a]
 
-  matchAnyM  :: m (gr a b) -> m (GDecomp gr a b)
+  matchAnyM  :: MonadFail m => m (gr a b) -> m (GDecomp gr a b)
   matchAnyM g = do vs <- labNodesM g
                    case vs of
                      []      -> fail "Match Exception, Empty Graph"
