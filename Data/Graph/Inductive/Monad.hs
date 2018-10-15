@@ -70,7 +70,7 @@ class (Monad m) => GraphM m gr where
                        else do vs <- nodesM g
                                return (minimum vs,maximum vs)
 
-  labEdgesM  :: m (gr a b) -> m [LEdge b]
+  labEdgesM  :: MonadFail m => m (gr a b) -> m [LEdge b]
   labEdgesM = ufoldM (\(p,v,_,s)->((map (i v) p ++ map (o v) s)++)) []
     where
       o v = \(l,w)->(v,w,l)
