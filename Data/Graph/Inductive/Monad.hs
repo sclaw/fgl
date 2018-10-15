@@ -105,7 +105,7 @@ ufoldM f u g = do b <- isEmptyM g
 nodesM :: (GraphM m gr) => m (gr a b) -> m [Node]
 nodesM = labNodesM >>. map fst
 
-edgesM :: (GraphM m gr) => m (gr a b) -> m [Edge]
+edgesM :: (GraphM m gr, MonadFail m) => m (gr a b) -> m [Edge]
 edgesM =  labEdgesM >>. map (\(v,w,_)->(v,w))
 
 newNodesM :: (GraphM m gr) => Int -> m (gr a b) -> m [Node]
