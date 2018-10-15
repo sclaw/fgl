@@ -117,13 +117,13 @@ getContext = MGT matchAnyM
 -- some functions defined by using the do-notation explicitly
 -- Note: most of these can be expressed as an instance of graphRec
 --
-getNodes' :: (Graph gr,GraphM m gr) => GT m (gr a b) [Node]
+getNodes' :: (Graph gr,GraphM m gr, MonadFail m) => GT m (gr a b) [Node]
 getNodes' = condMGT' isEmpty (return []) nodeGetter
 
-getNodes :: (GraphM m gr) => GT m (gr a b) [Node]
+getNodes :: (GraphM m gr, MonadFail m) => GT m (gr a b) [Node]
 getNodes = condMGT isEmptyM (return []) nodeGetter
 
-nodeGetter :: (GraphM m gr) => GT m (gr a b) [Node]
+nodeGetter :: (GraphM m gr, MonadFail m) => GT m (gr a b) [Node]
 nodeGetter = liftM2 (:) getNode getNodes
 
 sucGT :: (GraphM m gr) => Node -> GT m (gr a b) (Maybe [Node])
@@ -158,7 +158,7 @@ graphRec' :: (Graph gr,GraphM m gr) => GT m (gr a b) c ->
                            (c -> d -> d) -> d -> GT m (gr a b) d
 graphRec' = recMGT' isEmpty
 
-graphUFold :: (GraphM m gr) => (Context a b -> c -> c) -> c -> GT m (gr a b) c
+graphUFold :: (GraphM m gr, MonadFail m) => (Context a b -> c -> c) -> c -> GT m (gr a b) c
 graphUFold = graphRec getContext
 
 
@@ -169,20 +169,20 @@ graphUFold = graphRec getContext
 
 -- instances of graphRec
 --
-graphNodesM0 :: (GraphM m gr) => GT m (gr a b) [Node]
+graphNodesM0 :: (GraphM m gr, MonadFail m) => GT m (gr a b) [Node]
 graphNodesM0 = graphRec getNode (:) []
 
-graphNodesM :: (GraphM m gr) => GT m (gr a b) [Node]
+graphNodesM :: (GraphM m gr, MonadFail m) => GT m (gr a b) [Node]
 graphNodesM = graphUFold (\(_,v,_,_)->(v:)) []
 
-graphNodes :: (GraphM m gr) => m (gr a b) -> m [Node]
+graphNodes :: (GraphM m gr, MonadFail m) => m (gr a b) -> m [Node]
 graphNodes = runGT graphNodesM
 
-graphFilterM :: (GraphM m gr) => (Context a b -> Bool) ->
+graphFilterM :: (GraphM m gr, MonadFail m) => (Context a b -> Bool) ->
                               GT m (gr a b) [Context a b]
 graphFilterM p = graphUFold (\c cs->if p c then c:cs else cs) []
 
-graphFilter :: (GraphM m gr) => (Context a b -> Bool) -> m (gr a b) -> m [Context a b]
+graphFilter :: (GraphM m gr, MonadFail m) => (Context a b -> Bool) -> m (gr a b) -> m [Context a b]
 graphFilter p = runGT (graphFilterM p)
 
 
