@@ -91,7 +91,7 @@ f >>. g = (>>= return . g) . f
 --
 
 -- | graph fold
-ufoldM :: (GraphM m gr) => (Context a b -> c -> c) -> c -> m (gr a b) -> m c
+ufoldM :: (GraphM m gr, MonadFail m) => (Context a b -> c -> c) -> c -> m (gr a b) -> m c
 ufoldM f u g = do b <- isEmptyM g
                   if b then return u
                        else do (c,g') <- matchAnyM g
